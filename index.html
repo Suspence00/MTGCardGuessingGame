@@ -1,15 +1,119 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Card Guessing Game</title>
-    <script src="script.js"></script>
+    <title>Card Game</title>
+    <style>
+      /* Add some styles to make the app look nice */
+      #card-img {
+        height: 300px;
+        width: 200px;
+        background-size: cover;
+        background-position: center;
+        margin: 0 auto;
+        border: 1px solid black;
+        position: relative;
+      }
+      #card-img::before {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 50%;
+        background-color: black;
+        z-index: 1;
+      }
+      #card-name {
+        text-align: center;
+        margin-top: 10px;
+      }
+      button {
+        margin: 10px;
+      }
+    </style>
   </head>
   <body>
-    <div id="card-container">
-      <img id="card-image" alt='card'/>
-    </div>
-    <div id="buttons-container"></div>
-    <div id="score-container"></div>
-    <button id="start-button">Start Game</button>
+    <div id="card-img"></div>
+    <div id="card-name"></div>
+    <div id="buttons"></div>
+    <div id="points">Points: 0</div>
+    <div id="high-score">High Score: 0</div>
+    <div id="result"></div>
+
+    <script>
+      // Initialize variables
+      let points = 0;
+      let highScore = 0;
+
+      // Get the card image and name from Scryfall
+      function getCard() {
+        // Fetch a random card from the Scryfall API
+        fetch("https://api.scryfall.com/cards/random")
+          .then(response => response.json())
+          .then(cardData => {
+            // Get the card image URL and name
+            const imageUrl = cardData.image_uris.normal;
+            const cardName = cardData.name;
+
+            // Display the card image and name
+            const cardImg = document.getElementById("card-img");
+            cardImg.style.backgroundImage = `url(${imageUrl})`;
+            document.getElementById("card-name").innerHTML = cardName;
+
+            // Generate the buttons
+            generateButtons(cardName);
+          });
+      }
+
+      // Generate the buttons with the card name and three other random names
+      function generateButtons(cardName) {
+        const buttons = document.getElementById("buttons");
+        buttons.innerHTML = "";
+
+        // Get three random card names
+        fetch("https://api.scryfall.com/cards/random?q=!\"\"")
+          .then(response => response.json())
+          .then(cardData => {
+            const options = [cardData.name, cardData.name, cardData.name];
+            const randomIndex = Math.floor(Math.random() * 3);
+            options[randomIndex] = cardName;
+
+            // Shuffle the options
+            options.sort(() => Math.random() - 0.5);
+
+            // Create a button for each option
+            options.forEach(option => {
+              const button = document.createElement("button");
+              button.innerHTML = option;
+              button.onclick = function() {
+                // Check if the selected option is the correct card name
+                if (this.innerHTML === cardName) {
+                  points++;
+                  document.getElementById("result").innerHTML = "Correct!";
+                  document.getElementById("points").innerHTML = "Points: " + points;
+                } else {
+                  points = 0;
+                  document.getElementById("result").innerHTML = "Incorrect!";
+                  document.getElementById("points").innerHTML = "Points: " + points;
+                }
+
+                // Update the high score
+                if (points > highScore) {
+                  highScore = points;
+                  document.getElementById("high-score").innerHTML = "High Score: " + highScore;
+                }
+
+                // Get a new card
+                getCard();
+              };
+              buttons.appendChild(button);
+            });
+          });
+      }
+
+      // Start the game
+      getCard();
+    </script>
   </body>
 </html>
+
