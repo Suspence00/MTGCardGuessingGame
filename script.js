@@ -1,3 +1,4 @@
+window.onload = function(){
 const API_URL = 'https://api.scryfall.com/cards/random';
 const CARD_CONTAINER = document.getElementById('card-container');
 const BUTTONS_CONTAINER = document.getElementById('buttons-container');
@@ -76,3 +77,4 @@ function handleGuess(event) {
 }
 
 START_BUTTON.addEventListener('click', startGame);
+}
