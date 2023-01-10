@@ -70,45 +70,46 @@
         const buttons = document.getElementById("buttons");
         buttons.innerHTML = "";
 
-        // Get three random card names
-        fetch("https://api.scryfall.com/cards/random?q=!\"\"")
-          .then(response => response.json())
-          .then(cardData => {
-            const options = [cardData.name, cardData.name, cardData.name];
-            const randomIndex = Math.floor(Math.random() * 3);
-            options[randomIndex] = cardName;
-
-            // Shuffle the options
-            options.sort(() => Math.random() - 0.5);
-
-            // Create a button for each option
-            options.forEach(option => {
-              const button = document.createElement("button");
-              button.innerHTML = option;
-              button.onclick = function() {
-                // Check if the selected option is the correct card name
-                if (this.innerHTML === cardName) {
-                  points++;
-                  document.getElementById("result").innerHTML = "Correct!";
-                  document.getElementById("points").innerHTML = "Points: " + points;
-                } else {
-                  points = 0;
-                  document.getElementById("result").innerHTML = "Incorrect!";
-                  document.getElementById("points").innerHTML = "Points: " + points;
-                }
-
-                // Update the high score
-                if (points > highScore) {
-                  highScore = points;
-                  document.getElementById("high-score").innerHTML = "High Score: " + highScore;
-                }
-
-                // Get a new card
-                getCard();
-              };
-              buttons.appendChild(button);
+        let options = []
+        for (let i = 0; i < 3; i++) {
+          fetch("https://api.scryfall.com/cards/random?q=!\"\"")
+            .then(response => response.json())
+            .then(cardData => {
+              options.push(cardData.name);
+              if (options.length === 3) {
+                // Shuffle the options
+                options.sort(() => Math.random() - 0.5);
+                options[Math.floor(Math.random() * 3)] = cardName;
+                // Create a button for each option
+                options.forEach(option => {
+                  const button = document.createElement("button");
+                  button.innerHTML = option;
+                                    button.onclick = function() {
+                    // Check if the selected option is the correct card name
+                    if (this.innerHTML === cardName) {
+                      points++;
+                      document.getElementById("result").innerHTML = "Correct!";
+                      document.getElementById("points").innerHTML = "Points: " + points;
+                    } else {
+                      points = 0;
+                      document.getElementById("result").innerHTML = "Incorrect!";
+                      document.getElementById("points").innerHTML = "Points: " + points;
+                    }
+          
+                    // Update the high score
+                    if (points > highScore) {
+                      highScore = points;
+                      document.getElementById("high-score").innerHTML = "High Score: " + highScore;
+                    }
+          
+                    // Get a new card
+                    getCard();
+                  };
+                  buttons.appendChild(button);
+                });
+              }
             });
-          });
+        }
       }
 
       // Start the game
