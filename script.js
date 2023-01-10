@@ -63,7 +63,7 @@ function handleGuess(event) {
   if (button.innerText === currentCardName) {
     currentScore++;
     if (currentScore > highestScore) {
-      highestScore = currentScore;
+     highestScore = currentScore;
     }
     SCORE_CONTAINER.innerText = `Current Score: ${currentScore} | Highest Score: ${highestScore}`;
     alert('Correct!');
@@ -74,3 +74,5 @@ function handleGuess(event) {
   }
   getRandomCard();
 }
+
+START_BUTTON.addEventListener('click', startGame);
